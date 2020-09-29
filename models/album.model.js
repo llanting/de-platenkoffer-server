@@ -21,10 +21,10 @@ const AlbumModel = new Schema(
       type: String,
     },
     genres: Array,
-    // userId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'user'
-    // }
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    }
   },
   {
     timestamps: true

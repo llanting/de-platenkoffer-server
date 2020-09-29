@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const SpotifyWebApi = require('spotify-web-api-node');
 
+const { isLoggedIn } = require('../helpers/auth-helper');
+
 // setting the spotify-api goes here:
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.CLIENT_ID,
@@ -14,7 +16,7 @@ spotifyApi
   .then(data => spotifyApi.setAccessToken(data.body['access_token']))
   .catch(error => console.log('Something went wrong when retrieving an access token', error));
 
-router.post('/artist-search', (req,res) => {
+router.post('/artist-search', isLoggedIn, (req,res) => {
   spotifyApi.searchArtists(req.body.artistName)
     .then((data) => {
       res.status(200).json(data.body.artists.items)
@@ -27,7 +29,7 @@ router.post('/artist-search', (req,res) => {
     })
 })
 
-router.post('/albums-search', (req,res) => {
+router.post('/albums-search', isLoggedIn, (req,res) => {
   spotifyApi.searchAlbums(`album:${req.body.albumName}`, {limit:50})
     .then((result) => {
       let response = [];
@@ -47,7 +49,7 @@ router.post('/albums-search', (req,res) => {
     })
 })
 
-router.get('/albums/:artistId', (req,res) => {
+router.get('/albums/:artistId', isLoggedIn, (req,res) => {
   spotifyApi.getArtistAlbums(req.params.artistId, {limit:50})
     .then((result) => {
       let response = [];
@@ -66,7 +68,7 @@ router.get('/albums/:artistId', (req,res) => {
     })
 })
 
-router.get('/tracks/:albumId', (req,res) => {
+router.get('/tracks/:albumId', isLoggedIn, (req,res) => {
   spotifyApi.getAlbumTracks(req.params.albumId)
     .then((result) => {
       res.status(200).json(result.body)

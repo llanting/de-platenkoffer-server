@@ -140,7 +140,7 @@ router.post('/signin', (req, res) => {
     });
 })
 
-router.post('/logout', (req, res) => {
+router.get('/logout', isLoggedIn, (req, res) => {
   req.session.destroy();
   res
   .status(204)
