@@ -27,10 +27,36 @@ router.post('/artist-search', (req,res) => {
     })
 })
 
-router.get('/albums/:artistId', (req,res) => {
-  spotifyApi.getArtistAlbums(req.params.artistId)
+router.post('/albums-search', (req,res) => {
+  spotifyApi.searchAlbums(`album:${req.body.albumName}`, {limit:50})
     .then((result) => {
-      res.status(200).json(result.body)
+      let response = [];
+      result.body.albums.items.map((elem) => {
+        if (elem.album_type === 'album') {
+          response.push(elem);
+        }
+      })
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(500).json({
+        error: 'Couldn\'t get albums',
+        message: err
+      })
+    })
+})
+
+router.get('/albums/:artistId', (req,res) => {
+  spotifyApi.getArtistAlbums(req.params.artistId, {limit:50})
+    .then((result) => {
+      let response = [];
+      result.body.items.map((elem) => {
+        if (elem.album_type === 'album') {
+          response.push(elem);
+        }
+      })
+      res.status(200).json(response);
     })
     .catch(err => {
       res.status(500).json({
@@ -52,5 +78,7 @@ router.get('/tracks/:albumId', (req,res) => {
       })
     })
 })
+
+
 
 module.exports = router;
